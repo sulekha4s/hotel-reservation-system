@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payment</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/welcome.css">
+</head>
+<body style="background: #f7faff;">
+    <div class="navbar">
+        <div class="navbar-logo"><a href="/" style="color:#2d6cdf;text-decoration:none;">SOHAN HOTEL</a></div>
+    </div>
+    <main style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+        <div style="max-width:900px;width:100%;margin:80px auto 24px auto;padding:48px 48px 40px 48px;background:rgba(255,255,255,0.98);border-radius:20px;box-shadow:0 2px 24px rgba(0,0,0,0.10);">
+            <h2 style="color:#2d6cdf;text-align:center;margin-bottom:24px;font-size:2rem;">Payment</h2>
+            <div style="display:flex;align-items:center;gap:32px;justify-content:center;margin-bottom:24px;">
+                <img th:src="@{'/images/' + ${reservation.room.type.name().toLowerCase()} + '.jpg'}" alt="Room Image" style="width:120px;height:90px;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.10);" />
+                <div style="font-size:1.2rem;">
+                    <div style="font-weight:600;font-size:1.25rem;">Room <span th:text="${reservation.room.roomNumber}"></span></div>
+                    <div>Type: <span th:text="${reservation.room.type}"></span></div>
+                    <div>Price: $<span th:text="${reservation.totalPrice()}"></span></div>
+                    <div>Check-in: <span th:text="${reservation.checkInDate}"></span></div>
+                    <div>Check-out: <span th:text="${reservation.checkOutDate}"></span></div>
+                </div>
+            </div>
+            <form th:action="@{/payment/confirm}" method="post" style="max-width:500px;margin:0 auto;">
+                <input type="hidden" name="reservationId" th:value="${reservation.id}" />
+                <div style="margin:18px 0 18px 0;text-align:center;font-size:1.25rem;font-weight:700;color:#38a169;">
+                    Amount to Pay: $<span th:text="${reservation.totalPrice()}"></span>
+                </div>
+                <div style="margin-bottom:18px;">
+                    <label for="paymentType" style="font-weight:600;">Choose Payment Type:</label>
+                    <select id="paymentType" name="paymentType" style="width:100%;padding:10px;border-radius:7px;border:1px solid #d1d5db;font-size:1.08rem;">
+                        <option value="debit">Debit Card</option>
+                        <option value="credit">Credit Card</option>
+                        <option value="upi">UPI</option>
+                    </select>
+                </div>
+                <div id="cardDetails" style="display:block;">
+                    <input type="text" name="cardNumber" placeholder="Card Number" style="width:100%;padding:12px;margin-bottom:12px;border-radius:7px;border:1px solid #d1d5db;font-size:1.08rem;" />
+                    <input type="text" name="expiry" placeholder="Expiry (MM/YY)" style="width:100%;padding:12px;margin-bottom:12px;border-radius:7px;border:1px solid #d1d5db;font-size:1.08rem;" />
+                    <input type="text" name="cvv" placeholder="CVV" style="width:100%;padding:12px;margin-bottom:12px;border-radius:7px;border:1px solid #d1d5db;font-size:1.08rem;" />
+                </div>
+                <div id="upiDetails" style="display:none;text-align:center;">
+                    <img src="/images/qr-placeholder.png" alt="UPI QR Code" style="width:160px;height:160px;margin-bottom:12px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.10);" />
+                    <div style="font-size:1.08rem;color:#2d6cdf;">Scan this QR code with your UPI app to pay.</div>
+                </div>
+                <button type="submit" id="payBtn" style="width:100%;background:linear-gradient(90deg,#2d6cdf 60%,#38a169 100%);color:#fff;font-size:1.15rem;font-weight:700;padding:16px 0;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,0.10);margin-top:8px;opacity:1;cursor:pointer;transition:opacity 0.2s, cursor 0.2s;">Pay Now</button>
+            </form>
+            <script>
+                const paymentType = document.getElementById('paymentType');
+                const cardDetails = document.getElementById('cardDetails');
+                const upiDetails = document.getElementById('upiDetails');
+                const payBtn = document.getElementById('payBtn');
+                const cardNumber = document.querySelector('input[name="cardNumber"]');
+                const expiry = document.querySelector('input[name="expiry"]');
+                const cvv = document.querySelector('input[name="cvv"]');
+
+                function setPayBtnState(disabled) {
+                    payBtn.disabled = disabled;
+                    if (disabled) {
+                        payBtn.style.opacity = '0.5';
+                        payBtn.style.cursor = 'not-allowed';
+                    } else {
+                        payBtn.style.opacity = '1';
+                        payBtn.style.cursor = 'pointer';
+                    }
+                }
+
+                function validateCardFields() {
+                    if (paymentType.value === 'upi') {
+                        setPayBtnState(false);
+                        return;
+                    }
+                    const filled = cardNumber.value.trim() && expiry.value.trim() && cvv.value.trim();
+                    setPayBtnState(!filled);
+                }
+
+                cardNumber.addEventListener('input', validateCardFields);
+                expiry.addEventListener('input', validateCardFields);
+                cvv.addEventListener('input', validateCardFields);
+                paymentType.addEventListener('change', validateCardFields);
+
+                paymentType.addEventListener('change', function() {
+                    if (this.value === 'upi') {
+                        cardDetails.style.display = 'none';
+                        upiDetails.style.display = 'block';
+                    } else {
+                        cardDetails.style.display = 'block';
+                        upiDetails.style.display = 'none';
+                    }
+                });
+
+                // Initial validation
+                validateCardFields();
+            </script>
+        </div>
+    </main>
+</body>
+</html>

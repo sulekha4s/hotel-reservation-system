@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bookings</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/welcome.css">
+</head>
+<body style="background:#f7faff;">
+    <div class="navbar">
+        <div class="navbar-logo"><a href="/" style="color:#2d6cdf;text-decoration:none;">SOHAN HOTEL</a></div>
+    </div>
+    <main style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+        <div style="max-width:1400px;width:100%;margin:40px auto 0 auto;padding:40px 40px 32px 40px;background:rgba(255,255,255,0.98);border-radius:20px;box-shadow:0 2px 24px rgba(0,0,0,0.10);overflow-x:auto;">
+            <h1 style="color:#2d6cdf;text-align:center;margin-bottom:32px;">Bookings</h1>
+            <div th:if="${#lists.isEmpty(reservations)}" style="text-align:center;font-size:1.2rem;color:#888;margin:32px 0;">No bookings available.</div>
+            <table th:if="${!#lists.isEmpty(reservations)}" style="width:100%;border-collapse:collapse;box-shadow:0 2px 8px rgba(0,0,0,0.06);table-layout:fixed;">
+                <thead>
+                    <tr style="background:#eaf3ff;color:#2d6cdf;font-weight:700;font-size:1.08rem;">
+                        <th style="padding:14px 8px;border-bottom:2px solid #d1d5db;width:120px;text-align:left;">Booking ID</th>
+                        <th style="padding:14px 8px;border-bottom:2px solid #d1d5db;width:140px;text-align:left;">Name</th>
+                        <th style="padding:14px 8px;border-bottom:2px solid #d1d5db;width:100px;text-align:left;">Room</th>
+                        <th style="padding:14px 8px;border-bottom:2px solid #d1d5db;width:120px;text-align:left;">Check-in</th>
+                        <th style="padding:14px 8px;border-bottom:2px solid #d1d5db;width:120px;text-align:left;">Check-out</th>
+                        <th style="padding:14px 8px;border-bottom:2px solid #d1d5db;width:120px;text-align:left;">Amount</th>
+                        <th style="padding:14px 8px;border-bottom:2px solid #d1d5db;width:120px;text-align:left;">Status</th>
+                        <th style="padding:14px 8px;border-bottom:2px solid #d1d5db;width:120px;text-align:left;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="reservation : ${reservations}" style="background:#fff;">
+                        <td style="padding:12px 8px;border-bottom:1px solid #e5e7eb;word-break:break-word;text-align:left;" th:text="${reservation.bookingId}"></td>
+                        <td style="padding:12px 8px;border-bottom:1px solid #e5e7eb;word-break:break-word;text-align:left;" th:text="${reservation.user.name}"></td>
+                        <td style="padding:12px 8px;border-bottom:1px solid #e5e7eb;word-break:break-word;text-align:left;" th:text="${reservation.room.roomNumber}"></td>
+                        <td style="padding:12px 8px;border-bottom:1px solid #e5e7eb;word-break:break-word;text-align:left;" th:text="${reservation.checkInDate}"></td>
+                        <td style="padding:12px 8px;border-bottom:1px solid #e5e7eb;word-break:break-word;text-align:left;" th:text="${reservation.checkOutDate}"></td>
+                        <td style="padding:12px 8px;border-bottom:1px solid #e5e7eb;color:#38a169;font-weight:600;word-break:break-word;text-align:left;">$<span th:text="${reservation.totalPrice()}"></span></td>
+                        <td style="padding:12px 8px;border-bottom:1px solid #e5e7eb;word-break:break-word;text-align:left;" th:text="${reservation.status}"></td>
+                        <td style="padding:12px 8px;border-bottom:1px solid #e5e7eb;word-break:break-word;text-align:left;">
+                            <form th:action="@{/cancel-booking}" method="post" style="display:inline;">
+                                <input type="hidden" name="bookingId" th:value="${reservation.bookingId}" />
+                                <button type="button" onclick="confirmCancel(this)" style="background:linear-gradient(90deg,#2d6cdf 60%,#38a169 100%);color:#fff;border:none;padding:8px 18px;border-radius:7px;cursor:pointer;font-weight:600;">Cancel</button>
+                            </form>
+                            <span th:if="${reservation.status} == 'pending'">
+                                <a th:href="@{'/payment?reservationId=' + ${reservation.id}}" style="background:linear-gradient(90deg,#38a169 60%,#2d6cdf 100%);color:#fff;border:none;padding:8px 18px;border-radius:7px;cursor:pointer;font-weight:600;text-decoration:none;margin-left:8px;display:inline-block;">Pay</a>
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script>
+        function confirmCancel(btn) {
+            if (confirm('Are you sure you want to cancel this booking?')) {
+                btn.closest('form').submit();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Make Reservation</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/welcome.css">
+</head>
+<body style="background: #f7faff;">
+    <div class="navbar">
+        <div class="navbar-logo"><a href="/" style="color:#2d6cdf;text-decoration:none;">SOHAN HOTEL</a></div>
+    </div>
+    <main style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+        <div class="reserve-summary" style="max-width:900px;width:100%;margin:80px auto 24px auto;padding:32px 48px;background:rgba(255,255,255,0.98);border-radius:20px;box-shadow:0 2px 24px rgba(0,0,0,0.10);">
+            <h2 style="color:#2d6cdf;text-align:center;margin-bottom:18px;font-size:2rem;">Room Summary</h2>
+            <div style="display:flex;align-items:center;gap:32px;justify-content:center;margin-bottom:18px;">
+                <img th:src="@{'/images/' + ${room.type.name().toLowerCase()} + '.jpg'}" alt="Room Image" style="width:120px;height:90px;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.10);" />
+                <div style="font-size:1.2rem;">
+                    <div style="font-weight:600;font-size:1.25rem;">Room <span th:text="${room.roomNumber}"></span></div>
+                    <div>Type: <span th:text="${room.type}"></span></div>
+                    <div>Price: $<span th:text="${room.price}"></span></div>
+                    <div>Checkin: <span th:text="${checkInDate}"></span></div>
+                    <div>Checkout: <span th:text="${checkOutDate}"></span></div>
+                </div>
+            </div>
+        </div>
+        <div class="reserve-container" style="max-width:900px;width:100%;margin:0 auto;background:rgba(255,255,255,0.98);border-radius:20px;box-shadow:0 2px 24px rgba(0,0,0,0.10);padding:48px 48px 40px 48px;">
+            <div class="reserve-title" style="font-size:1.7rem;color:#2d6cdf;font-weight:700;text-align:center;margin-bottom:24px;">Enter Your Details</div>
+            <form th:action="@{/reserve}" th:object="${reservation}" method="post" class="reserve-form" style="max-width:500px;margin:0 auto;">
+                <input type="hidden" name="roomId" th:value="${room.id}" />
+                <input type="hidden" name="checkInDate" th:value="${checkInDate}" />
+                <input type="hidden" name="checkOutDate" th:value="${checkOutDate}" />
+                <input type="text" th:field="*{user.name}" placeholder="Full Name" required style="width:100%;padding:14px;margin-bottom:20px;border-radius:8px;border:1px solid #d1d5db;font-size:1.12rem;background:#f7faff;" />
+                <input type="email" th:field="*{user.email}" placeholder="Email" required style="width:100%;padding:14px;margin-bottom:20px;border-radius:8px;border:1px solid #d1d5db;font-size:1.12rem;background:#f7faff;" />
+                <input type="text" th:field="*{user.phone}" placeholder="Phone" required style="width:100%;padding:14px;margin-bottom:24px;border-radius:8px;border:1px solid #d1d5db;font-size:1.12rem;background:#f7faff;" />
+                <div style="margin:18px 0 18px 0;text-align:center;font-size:1.25rem;font-weight:700;color:#38a169;">
+                    Amount to Pay: $<span th:text="${room.price}"></span>
+                </div>
+                <button type="submit" style="width:100%;background:linear-gradient(90deg,#2d6cdf 60%,#38a169 100%);color:#fff;font-size:1.15rem;font-weight:700;padding:16px 0;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,0.10);margin-top:8px;">Pay Now</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Available Rooms</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/welcome.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-logo"><a href="/" style="color:#2d6cdf;text-decoration:none;">SOHAN HOTEL</a></div>
+    </div>
+    <div class="container" style="max-width: 1000px; margin: 100px auto 0 auto; padding: 32px 32px; background: rgba(255,255,255,0.97); border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.10);">
+        <div th:replace="date-selector :: dateSelector(${checkInDate}, ${checkOutDate})"></div>
+        <h1>Available Rooms</h1>
+        <p>Check-in: <span th:text="${checkInDate}"></span> | Check-out: <span th:text="${checkOutDate}"></span></p>
+        <p>Number of days to stay: <span th:text="${days}"></span></p>
+        <ul class="room-list">
+            <li th:if="${#lists.isEmpty(rooms)}" style="text-align:center; font-size:1.2em; color:#d32f2f; list-style:none; margin:32px 0;">All rooms are booked, please check later.</li>
+            <li th:each="room : ${rooms}" class="room-item">
+                <div class="room-card">
+                    <img th:src="@{'/images/' + ${room.type.name().toLowerCase()} + '.jpg'}" alt="Room Image" class="room-img" />
+                    <div class="room-details">
+                        <h3>Room <span th:text="${room.roomNumber}"></span></h3>
+                        <p>Type: <span th:text="${room.type}"></span></p>
+                        <p>Base Price: $<span th:text="${room.price}"></span></p>
+                        <p>Total Price for <span th:text="${days}"></span> days: $<span th:text="${room.price * days}"></span></p>
+                    </div>
+                    <div class="room-action">
+                        <span th:if="${room.available}">
+                            <a th:href="@{'/reserve/' + ${room.id} + '?checkInDate=' + ${checkInDate} + '&checkOutDate=' + ${checkOutDate}}" class="book-btn">Book</a>
+                        </span>
+                        <span th:unless="${room.available}" class="not-available">Not Available</span>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

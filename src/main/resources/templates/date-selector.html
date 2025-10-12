@@ -1,0 +1,43 @@
+<!-- Date Selector Fragment -->
+<div th:fragment="dateSelector(checkInDate, checkOutDate)">
+    <form class="welcome-form" th:action="@{/available-rooms}" method="post" style="margin-bottom: 24px; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+        <div class="date-row" style="display: flex; gap: 24px;">
+            <div class="date-group">
+                <label for="checkInDate">Check-in</label>
+                <input type="date" id="checkInDate" name="checkInDate" th:value="${checkInDate}" required />
+            </div>
+            <div class="date-group">
+                <label for="checkOutDate">Check-out</label>
+                <input type="date" id="checkOutDate" name="checkOutDate" th:value="${checkOutDate}" required />
+            </div>
+        </div>
+        <button type="submit" class="book-btn" style="margin-top: 8px;">Search Rooms</button>
+    </form>
+    <script>
+        // Set min date for check-in and check-out
+        const today = new Date().toISOString().split('T')[0];
+        const checkInInput = document.getElementById('checkInDate');
+        const checkOutInput = document.getElementById('checkOutDate');
+        checkInInput.setAttribute('min', today);
+        checkOutInput.setAttribute('min', today);
+
+        checkInInput.addEventListener('change', function() {
+            checkOutInput.setAttribute('min', checkInInput.value);
+        });
+
+        document.querySelector('.welcome-form').addEventListener('submit', function(e) {
+            const checkIn = checkInInput.value;
+            const checkOut = checkOutInput.value;
+            if (checkIn < today) {
+                alert('Check-in date cannot be before today.');
+                e.preventDefault();
+                return;
+            }
+            if (checkOut < checkIn) {
+                alert('Check-out date cannot be before check-in date.');
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
+</div>
